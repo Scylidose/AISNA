@@ -1,0 +1,6 @@
+myvenv/
+config/*
+*.png
+*.jpg
+*.wav
+*.txt
