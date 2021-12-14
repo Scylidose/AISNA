@@ -3,4 +3,5 @@ config/*
 *.png
 *.jpg
 *.wav
-*.txt
+*/*.txt
+__pycache__
