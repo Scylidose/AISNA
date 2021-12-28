@@ -44,84 +44,85 @@ def get_extended_image(img, x, y, w, h, k=0.1):
     face_image = np.expand_dims(face_image, axis=0)
     return face_image
 
-video_capture = cv2.VideoCapture(0)  # webcamera
+def video_capture():
 
-print("Streaming started - to quit press ESC")
-while True:
-    # Capture frame-by-frame
-    ret, frame = video_capture.read()
-    if not ret:
-        print("Can't receive frame (stream end?). Exiting ...")
-        break
+    video_capture = cv2.VideoCapture(0)  # webcamera
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    while True:
+        # Capture frame-by-frame
+        ret, frame = video_capture.read()
+        if not ret:
+            print("Can't receive frame (stream end?). Exiting ...")
+            break
 
-    faces = face_cascade.detectMultiScale(
-        gray,
-        scaleFactor=1.3,
-        minNeighbors=4,
-        minSize=(90, 90),
-        flags=cv2.CASCADE_SCALE_IMAGE
-    )
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    f = open("data/transcription.txt", "r")
+        faces = face_cascade.detectMultiScale(
+            gray,
+            scaleFactor=1.3,
+            minNeighbors=4,
+            minSize=(90, 90),
+            flags=cv2.CASCADE_SCALE_IMAGE
+        )
 
-    transcript = f.read().splitlines()
-    transcript1 = ""
-    transcript2 = ""
+        f = open("data/transcription.txt", "r")
 
-    if len(transcript) >= 1:
-        transcript1 = transcript[0]
+        transcript = f.read().splitlines()
+        transcript1 = ""
+        transcript2 = ""
 
-        if len(transcript) >= 2:
-            transcript2 = transcript[1]
+        if len(transcript) >= 1:
+            transcript1 = transcript[0]
 
-    for (x, y, w, h) in faces:
-        random_take = random.randrange(30)
-        # for each face on the image detected by OpenCV
-        # get extended image of this face
-        face_image = get_extended_image(frame, x, y, w, h, 0.5)
+            if len(transcript) >= 2:
+                transcript2 = transcript[1]
 
-        # classify face and draw a rectangle around the face
-        result = face_classifier.predict(face_image)
-        prediction = class_names[np.array(
-            result[0]).argmax(axis=0)]  # predicted class
-        confidence = np.array(result[0]).max(axis=0)  # degree of confidence
+        for (x, y, w, h) in faces:
+            random_take = random.randrange(30)
+            # for each face on the image detected by OpenCV
+            # get extended image of this face
+            face_image = get_extended_image(frame, x, y, w, h, 0.5)
+
+            # classify face and draw a rectangle around the face
+            result = face_classifier.predict(face_image)
+            prediction = class_names[np.array(
+                result[0]).argmax(axis=0)]  # predicted class
+            confidence = np.array(result[0]).max(axis=0)  # degree of confidence
 
 
-        if prediction == 'admin':
-            
-            if random_take == 5:
-                # Save image in train set
-                letters = string.ascii_lowercase
-                face_save = frame[y:y+h, x:x+w] # slice the face from the image
-                cv2.imwrite(imgLink+'admin-'+str(''.join(random.choice(letters) for i in range(10)))+'.jpg', face_save)
-                cv2.imwrite(imgLinkAug+'admin-'+str(''.join(random.choice(letters) for i in range(10)))+'.jpg', face_save)
+            if prediction == 'admin':
+                
+                if random_take == 5:
+                    # Save image in train set
+                    letters = string.ascii_lowercase
+                    face_save = frame[y:y+h, x:x+w] # slice the face from the image
+                    cv2.imwrite(imgLink+'admin-'+str(''.join(random.choice(letters) for i in range(10)))+'.jpg', face_save)
+                    cv2.imwrite(imgLinkAug+'admin-'+str(''.join(random.choice(letters) for i in range(10)))+'.jpg', face_save)
 
-                print("Saving...")
+                    print("Saving...")
 
-            color = (0,250,251)
-            name = "ADMIN"
-        else:
-            name = "UNKNOWN"
-            color = (255, 255, 255)
+                color = (0,250,251)
+                name = "ADMIN"
+            else:
+                name = "UNKNOWN"
+                color = (255, 255, 255)
 
-        if transcript1 == "hello":
-            # draw a rectangle around the face
-            cv2.rectangle(frame,
-                        (x, y),  # start_point
-                        (x+w, y+h),  # end_point
-                        color,
-                        2)  # thickness in px
+            if transcript1 == "hello":
+                # draw a rectangle around the face
+                cv2.rectangle(frame,
+                            (x, y),  # start_point
+                            (x+w, y+h),  # end_point
+                            color,
+                            2)  # thickness in px
 
-            if transcript2 == "can you see me":
-                cv2.putText(frame, "{:5} - {:.2f}%".format(name, confidence*100), (x,y-20), cv2.FONT_HERSHEY_SIMPLEX, cv2.FONT_HERSHEY_DUPLEX, color)
+                if transcript2 == "can you see me":
+                    cv2.putText(frame, "{:5} - {:.2f}%".format(name, confidence*100), (x,y-20), cv2.FONT_HERSHEY_SIMPLEX, cv2.FONT_HERSHEY_DUPLEX, color)
 
-    # Exit with ESC
-    key = cv2.waitKey(1)
-    if key % 256 == 27:  # ESC code
-        break
+        # Exit with ESC
+        key = cv2.waitKey(1)
+        if key % 256 == 27:  # ESC code
+            break
 
-# when everything done, release the capture
-video_capture.release()
-cv2.destroyAllWindows()
+    # when everything done, release the capture
+    video_capture.release()
+    cv2.destroyAllWindows()
