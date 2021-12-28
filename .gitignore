@@ -1,8 +1,6 @@
 myvenv/
-config/*
 *.png
 *.jpg
-*.wav
 */*.txt
 __pycache__
 models/*.h5
