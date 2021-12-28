@@ -82,6 +82,12 @@ The virtualenv package is required to create virtual environments. You can insta
     pip install -r requirements.txt
 ```
 
+5. Execute python program
+
+```sh
+    python main.py
+```
+
 ## References
 
 https://towardsdatascience.com/how-to-create-real-time-face-detector-ff0e1f81925f
