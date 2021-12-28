@@ -6,3 +6,4 @@ config/*
 */*.txt
 __pycache__
 models/*.h5
+data/*.csv
