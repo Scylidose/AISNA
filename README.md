@@ -34,6 +34,21 @@ I chose to fine-tune this different parameters on the MobileNet architecture:
 
 ### Results
 
+Such as seen previously, the best set of parameters are: 
+- Batch Size: 16
+- Activation function: Softmax
+- Optimizer: Adam
+- Learning Rate: 0.01
+
+Which provide a loss of 0.0247 and accuracy of 0.9914 on the *training set* and a loss of 0.0118 and accuracy of 0.9954 on the *validation set*.  
+
+Finally, when using this model, we obtain an accuracy score of 0.9598 on the *test set*.
+
+I also wanted to compare the accuracy of the model using data augmentation to add more image of myself on the training set. In comparaison, the *training set* with data augmentation contains 145 images of my faces and the *training set* with image augmentation contains 2490 images of myself with some modifications.
+After training the model and this new image, we obtained a loss of 0.0004 and accuracy of 1.0 on the *training set* and a loss of 0.0076 and accuracy of 0.9981 on the *validation set*. The accuracy score on the *test set* remains the same.
+
+Since the model with augmented data presents a better accuracy and loss score, we decided to use this technique.
+
 ## Getting Started
 
 ### Prerequisites
