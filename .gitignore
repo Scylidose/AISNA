@@ -5,3 +5,4 @@ config/*
 *.wav
 */*.txt
 __pycache__
+models/*.h5
