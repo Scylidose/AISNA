@@ -107,7 +107,7 @@ def video_capture():
                 name = "UNKNOWN"
                 color = (255, 255, 255)
 
-            if transcript1 == "hello":
+            if transcript1 == "can you see me":
                 # draw a rectangle around the face
                 cv2.rectangle(frame,
                             (x, y),  # start_point
@@ -115,7 +115,7 @@ def video_capture():
                             color,
                             2)  # thickness in px
 
-                if transcript2 == "can you see me":
+                if transcript2 == "who am i":
                     cv2.putText(frame, "{:5} - {:.2f}%".format(name, confidence*100), (x,y-20), cv2.FONT_HERSHEY_SIMPLEX, cv2.FONT_HERSHEY_DUPLEX, color)
 
         # Exit with ESC
