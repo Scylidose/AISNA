@@ -2,10 +2,11 @@
 
 ## Description 
 
-AISNA (or Admin IS Not Admin) is a project inspired from the Person of Interest TV series and more specifically from this excerpt from an episode (S4xE05):
+**AISNA** (or *Admin IS Not Admin*) is a project inspired from the Person of Interest TV series and more specifically from this excerpt from an episode (S4xE05):  
+
 [![Admin is not Admin](http://img.youtube.com/vi/nhWe2nf24ag/0.jpg)](http://www.youtube.com/watch?v=nhWe2nf24ag "Person of Interest - Admin is not Admin")
 
-AISNA is a deep learning algorithm which use live faces recognition to determine if the person on camera is either an admin or an unknown person. It also uses voice recognition to show more features on the broadcast if certain words are used.
+AISNA is a deep learning algorithm which use **live faces recognition** to determine if the person on camera is either an admin or an unknown person. It also uses **voice recognition** to show more features on the broadcast if certain words are used.
 
 ## Example 
 
@@ -62,3 +63,7 @@ https://realpython.com/face-detection-in-python-using-a-webcam/
 https://face-recognition.readthedocs.io/en/latest/readme.html 
 
 https://www.mygreatlearning.com/blog/face-recognition/
+
+https://realpython.com/python-speech-recognition/
+
+https://towardsdatascience.com/real-time-speech-recognition-python-assemblyai-13d35eeed226
