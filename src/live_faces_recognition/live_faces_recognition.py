@@ -7,19 +7,33 @@ import tensorflow as tf
 from tensorflow import keras
 import random
 import string
+import os 
 
 # OpenCV
 import cv2
 
- # opencv object that will detect faces for us
+# Classifier function
+from src.live_faces_recognition import classifier
+
+# opencv object that will detect faces for us
 face_cascade = cv2.CascadeClassifier(
     cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 # Load model to face classification
 # model was created in me_not_me_classifier.ipynb notebook
-model_name = 'face_classifier_aug.h5'
+use_aug = False
+model_name = "face_classifier.h5"
 
-face_classifier = keras.models.load_model(f'models/{model_name}')
+if use_aug:
+    model_name = "face_classifier_aug.h5"
+
+model_location = 'models/'+model_name
+
+if os.path.isfile(model_location) != True:
+    classifier.train_model(classifier.compile_model(classifier.build_model()))
+
+face_classifier = keras.models.load_model(model_location)
+
 class_names = ['admin', 'other']
 imgLink = "data/train/admin/"
 imgLinkAug = "data/train_aug/admin/"
@@ -84,7 +98,10 @@ def video_capture():
             face_image = get_extended_image(frame, x, y, w, h, 0.5)
 
             # classify face and draw a rectangle around the face
-            result = face_classifier.predict(face_image)
+            if face_classifier:
+                result = face_classifier.predict(face_image)
+            else:
+                result = ["other"]
             prediction = class_names[np.array(
                 result[0]).argmax(axis=0)]  # predicted class
             confidence = np.array(result[0]).max(axis=0)  # degree of confidence
@@ -107,7 +124,7 @@ def video_capture():
                 name = "UNKNOWN"
                 color = (255, 255, 255)
 
-            if transcript1 == "hello":
+            if transcript1 == "can you see me":
                 # draw a rectangle around the face
                 cv2.rectangle(frame,
                             (x, y),  # start_point
@@ -115,7 +132,7 @@ def video_capture():
                             color,
                             2)  # thickness in px
 
-                if transcript2 == "can you see me":
+                if transcript2 == "who am i":
                     cv2.putText(frame, "{:5} - {:.2f}%".format(name, confidence*100), (x,y-20), cv2.FONT_HERSHEY_SIMPLEX, cv2.FONT_HERSHEY_DUPLEX, color)
 
         # Exit with ESC
