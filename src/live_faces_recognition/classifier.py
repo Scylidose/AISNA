@@ -8,10 +8,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.callbacks import EarlyStopping
-
-from tensorflow.keras.preprocessing import image
+from keras.callbacks import ModelCheckpoint
+from keras.callbacks import EarlyStopping
 
 # Test dataset is set explicitly, because the amount of data is very small
 train_aug_image_folder = os.path.join('data', 'train_aug')
@@ -131,7 +129,7 @@ def compile_model(face_classifier):
 
     return face_classifier
 
-def train_model(face_classifier, epochs=5):
+def train_model(face_classifier, epochs=10):
 
     # ModelCheckpoint to save model in case of interrupting the learning process
     checkpoint = ModelCheckpoint(name_to_save,
@@ -166,10 +164,10 @@ def test_image_classifier(model, path, y_true, img_height=128, img_width=128, cl
     for filename in os.listdir(path):
         # read each image in the folder and classifies it
         test_path = os.path.join(path, filename)
-        test_image = image.load_img(
+        test_image = keras.utils.load_img(
             test_path, target_size=(img_height, img_width, 3))
         # from image to array, can try type(test_image)
-        test_image = image.img_to_array(test_image)
+        test_image = keras.utils.img_to_array(test_image)
 
         test_image = np.expand_dims(test_image, axis=0)
         result = model.predict(test_image)
