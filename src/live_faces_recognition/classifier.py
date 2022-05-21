@@ -52,27 +52,6 @@ val_ds = keras.preprocessing.image_dataset_from_directory(
     label_mode='categorical',
     shuffle=True)
 
-# Train and validation sets of augmented dataset
-train_aug_ds = keras.preprocessing.image_dataset_from_directory(
-    train_aug_image_folder,
-    validation_split=validation_ratio,
-    subset="training",
-    seed=42,
-    image_size=(img_height, img_width),
-    label_mode='categorical',
-    batch_size=batch_size,
-    shuffle=True)
-
-val_aug_ds = keras.preprocessing.image_dataset_from_directory(
-     train_aug_image_folder,
-     validation_split=validation_ratio,
-     subset="validation",
-     seed=42,
-     image_size=(img_height, img_width),
-     batch_size=batch_size,
-     label_mode='categorical',
-     shuffle=True)
-
 # Test set
 test_ds = keras.preprocessing.image_dataset_from_directory(
       test_image_folder,
@@ -81,9 +60,31 @@ test_ds = keras.preprocessing.image_dataset_from_directory(
       shuffle=False)
 
 # Train on augmented dataset
-train_on_aug = True  
+train_on_aug = False
 
 if train_on_aug:
+        
+    # Train and validation sets of augmented dataset
+    train_aug_ds = keras.preprocessing.image_dataset_from_directory(
+        train_aug_image_folder,
+        validation_split=validation_ratio,
+        subset="training",
+        seed=42,
+        image_size=(img_height, img_width),
+        label_mode='categorical',
+        batch_size=batch_size,
+        shuffle=True)
+
+    val_aug_ds = keras.preprocessing.image_dataset_from_directory(
+        train_aug_image_folder,
+        validation_split=validation_ratio,
+        subset="validation",
+        seed=42,
+        image_size=(img_height, img_width),
+        batch_size=batch_size,
+        label_mode='categorical',
+        shuffle=True)
+
     train_ds = train_aug_ds
     val_ds = val_aug_ds
 
@@ -197,6 +198,6 @@ def test_model():
                                       y_true='other')
 
 
-face_classifier = build_model() # Build the model
-train_model(compile_model(face_classifier)) # Compile and train the model
-test_model() # Test the model on the test set
+# face_classifier = build_model() # Build the model
+# train_model(compile_model(face_classifier)) # Compile and train the model
+# test_model() # Test the model on the test set
