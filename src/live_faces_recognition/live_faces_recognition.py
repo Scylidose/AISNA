@@ -92,6 +92,7 @@ def video_capture():
                 transcript2 = transcript[1]
 
         for (x, y, w, h) in faces:
+
             random_take = random.randrange(30)
             # for each face on the image detected by OpenCV
             # get extended image of this face
@@ -101,14 +102,13 @@ def video_capture():
             if face_classifier:
                 result = face_classifier.predict(face_image)
             else:
-                result = ["other"]
+                result = [[0, 1]]
+
             prediction = class_names[np.array(
                 result[0]).argmax(axis=0)]  # predicted class
-            confidence = np.array(result[0]).max(axis=0)  # degree of confidence
-
+            # confidence = np.array(result[0]).max(axis=0)  # degree of confidence
 
             if prediction == 'admin':
-                
                 if random_take == 5:
                     # Save image in train set
                     letters = string.ascii_lowercase
@@ -117,12 +117,11 @@ def video_capture():
                     cv2.imwrite(imgLinkAug+'admin-'+str(''.join(random.choice(letters) for i in range(10)))+'.jpg', face_save)
 
                     print("Saving...")
-
-                color = (0,250,251)
                 name = "ADMIN"
             else:
                 name = "UNKNOWN"
-                color = (255, 255, 255)
+                
+            color = (255, 255, 255)
 
             if transcript1 == "can you see me":
                 # draw a rectangle around the face
@@ -133,7 +132,9 @@ def video_capture():
                             2)  # thickness in px
 
                 if transcript2 == "who am i":
-                    cv2.putText(frame, "{:5} - {:.2f}%".format(name, confidence*100), (x,y-20), cv2.FONT_HERSHEY_SIMPLEX, cv2.FONT_HERSHEY_DUPLEX, color)
+                    cv2.putText(frame, "{:5}".format(name), (x,y-20), cv2.FONT_HERSHEY_SIMPLEX, 1, color)
+
+        cv2.imshow('Video', frame)
 
         # Exit with ESC
         key = cv2.waitKey(1)
