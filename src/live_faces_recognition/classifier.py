@@ -27,7 +27,7 @@ class_names = ['admin', 'other']
 batch_size = 16
 activation = 'softmax'
 optimizer = 'adam'
-learning_rate = 0.01
+learning_rate = 0.5
 
 # Train and validation sets
 train_ds = keras.preprocessing.image_dataset_from_directory(
@@ -129,7 +129,7 @@ def compile_model(face_classifier):
 
     return face_classifier
 
-def train_model(face_classifier, epochs=10):
+def train_model(face_classifier, epochs=5):
 
     # ModelCheckpoint to save model in case of interrupting the learning process
     checkpoint = ModelCheckpoint(name_to_save,
@@ -162,22 +162,24 @@ def test_image_classifier(model, path, y_true, img_height=128, img_width=128, cl
     correct = 0  # number of images classified correctly
 
     for filename in os.listdir(path):
-        # read each image in the folder and classifies it
-        test_path = os.path.join(path, filename)
-        test_image = keras.utils.load_img(
-            test_path, target_size=(img_height, img_width, 3))
-        # from image to array, can try type(test_image)
-        test_image = keras.utils.img_to_array(test_image)
+        if filename != ".gitignore":
+            # read each image in the folder and classifies it
+            test_path = os.path.join(path, filename)
+            test_image = keras.utils.load_img(
+                test_path, target_size=(img_height, img_width, 3))
+            # from image to array, can try type(test_image)
+            test_image = keras.utils.img_to_array(test_image)
 
-        test_image = np.expand_dims(test_image, axis=0)
-        result = model.predict(test_image)
+            test_image = np.expand_dims(test_image, axis=0)
+            result = model.predict(test_image)
 
-        y_pred = class_names[np.array(result[0]).argmax(
-            axis=0)]  # predicted class
+            y_pred = class_names[np.array(result[0]).argmax(
+                axis=0)]  # predicted class
 
-        total += 1
-        if y_pred == y_true:
-            correct += 1
+            total += 1
+
+            if y_pred == y_true:
+                correct += 1
 
     print("\nTotal accuracy is {:.2f}% = {}/{} samples classified correctly".format(
         correct/total*100, correct, total))
