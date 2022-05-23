@@ -1,25 +1,33 @@
 import speech_recognition as sr
 
-r = sr.Recognizer()
+def speechRecognition(file_transcript = ""):
+        
+    r = sr.Recognizer()
 
-f = open("data/transcription.txt", "w")
+    f = open("data/transcription.txt", "a+")
 
-mic = sr.Microphone()
+    file_transcript = f.read()
 
-if not isinstance(r, sr.Recognizer):
-    raise TypeError("`recognizer` must be `Recognizer` instance")
+    mic = sr.Microphone()
 
-if not isinstance(mic, sr.Microphone):
-    raise TypeError("`microphone` must be `Microphone` instance")
+    if not isinstance(r, sr.Recognizer):
+        raise TypeError("`recognizer` must be `Recognizer` instance")
 
-def speechRecognition():
+    if not isinstance(mic, sr.Microphone):
+        raise TypeError("`microphone` must be `Microphone` instance")
+
     print("listening")
-    with mic as source:
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source)
+    try:
+        with mic as source:
+            r.adjust_for_ambient_noise(source, duration=0.2)
+            audio = r.listen(source)
 
-    transcript = r.recognize_google(audio)
-    print(transcript)
-    f.write(transcript)
-
-    speechRecognition()
+            transcript = r.recognize_google(audio)
+            print(transcript)
+            f.write(transcript+"\n")
+        f.close()
+    except KeyboardInterrupt:
+        raise KeyboardInterrupt
+    else:
+        pass
+    return speechRecognition(file_transcript)

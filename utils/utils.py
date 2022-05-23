@@ -56,27 +56,29 @@ def data_augmentation():
         total = len(os.listdir(image_folder_to_generate))  # number of files in folder
         for filename in os.listdir(image_folder_to_generate):
             # for each image in folder: read it
-            image_path = os.path.join(image_folder_to_generate, filename)
-            image = keras.preprocessing.image.load_img(
-                image_path, target_size=(img_height, img_width, 3))
-            image = keras.preprocessing.image.img_to_array(
-                image)  # from image to array
+            if filename != ".gitignore":
+                image_path = os.path.join(image_folder_to_generate, filename)
 
-            image = np.expand_dims(image, axis=0)
+                image = keras.preprocessing.image.load_img(
+                    image_path, target_size=(img_height, img_width, 3))
+                image = keras.preprocessing.image.img_to_array(
+                    image)  # from image to array
 
-            # create ImageDataGenerator object for it
-            current_image_gen = train_datagen.flow(image,
-                                                batch_size=1,
-                                                save_to_dir=image_folder_to_save,
-                                                save_prefix=filename,
-                                                save_format="jpg")
+                image = np.expand_dims(image, axis=0)
 
-            # generate n samples
-            count = 0
-            for image in current_image_gen:  # accessing the object saves the image to disk
-                count += 1
-                if count == n:  # n images were generated
-                    break
-            i += 1
+                # create ImageDataGenerator object for it
+                current_image_gen = train_datagen.flow(image,
+                                                    batch_size=1,
+                                                    save_to_dir=image_folder_to_save,
+                                                    save_prefix=filename,
+                                                    save_format="jpg")
+
+                # generate n samples
+                count = 0
+                for image in current_image_gen:  # accessing the object saves the image to disk
+                    count += 1
+                    if count == n:  # n images were generated
+                        break
+                i += 1
 
         print("\nTotal number images generated for "+class_name+"= {}".format(n*total))

@@ -8,10 +8,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.callbacks import EarlyStopping
-
-from tensorflow.keras.preprocessing import image
+from keras.callbacks import ModelCheckpoint
+from keras.callbacks import EarlyStopping
 
 # Test dataset is set explicitly, because the amount of data is very small
 train_aug_image_folder = os.path.join('data', 'train_aug')
@@ -26,44 +24,39 @@ validation_ratio = 0.2  # 15% for the validation
 AUTOTUNE = tf.data.AUTOTUNE
 
 class_names = ['admin', 'other']
-batch_size = 16
+batch_size = 8
 activation = 'softmax'
 optimizer = 'adam'
-learning_rate = 0.01
-
-# Train and validation sets
-train_ds = keras.preprocessing.image_dataset_from_directory(
-    train_image_folder,
-    validation_split=validation_ratio,
-    subset="training",
-    seed=42,
-    image_size=(img_height, img_width),
-    label_mode='categorical',
-    batch_size=batch_size,
-    shuffle=True)
-
-val_ds = keras.preprocessing.image_dataset_from_directory(
-    train_image_folder,
-    validation_split=validation_ratio,
-    subset="validation",
-    seed=42,
-    image_size=(img_height, img_width),
-    batch_size=batch_size,
-    label_mode='categorical',
-    shuffle=True)
-
-# Test set
-test_ds = keras.preprocessing.image_dataset_from_directory(
-      test_image_folder,
-      image_size=(img_height, img_width),
-      label_mode='categorical',
-      shuffle=False)
+learning_rate = 0.5
 
 # Train on augmented dataset
 train_on_aug = False
 
-if train_on_aug:
-        
+def create_dataset():
+    # Train and validation sets
+    train_ds = keras.preprocessing.image_dataset_from_directory(
+        train_image_folder,
+        validation_split=validation_ratio,
+        subset="training",
+        seed=42,
+        image_size=(img_height, img_width),
+        label_mode='categorical',
+        batch_size=batch_size,
+        shuffle=True)
+
+    val_ds = keras.preprocessing.image_dataset_from_directory(
+        train_image_folder,
+        validation_split=validation_ratio,
+        subset="validation",
+        seed=42,
+        image_size=(img_height, img_width),
+        batch_size=batch_size,
+        label_mode='categorical',
+        shuffle=True)
+
+    return (train_ds, val_ds)
+
+def create_aug_dataset():
     # Train and validation sets of augmented dataset
     train_aug_ds = keras.preprocessing.image_dataset_from_directory(
         train_aug_image_folder,
@@ -73,7 +66,8 @@ if train_on_aug:
         image_size=(img_height, img_width),
         label_mode='categorical',
         batch_size=batch_size,
-        shuffle=True)
+        shuffle=True
+    )
 
     val_aug_ds = keras.preprocessing.image_dataset_from_directory(
         train_aug_image_folder,
@@ -83,15 +77,10 @@ if train_on_aug:
         image_size=(img_height, img_width),
         batch_size=batch_size,
         label_mode='categorical',
-        shuffle=True)
+        shuffle=True
+    )
 
-    train_ds = train_aug_ds
-    val_ds = val_aug_ds
-
-    name_to_save = f"models/face_classifier_aug.h5"
-else:
-    name_to_save = f"models/face_classifier.h5"
-
+    return (train_aug_ds, val_aug_ds)
 
 def build_model():
 
@@ -133,6 +122,13 @@ def compile_model(face_classifier):
 
 def train_model(face_classifier, epochs=5):
 
+    if train_on_aug:
+        train_ds, val_ds = create_aug_dataset()
+        name_to_save = f"models/face_classifier_aug.h5"
+    else:
+        train_ds, val_ds = create_dataset()
+        name_to_save = f"models/face_classifier.h5"
+
     # ModelCheckpoint to save model in case of interrupting the learning process
     checkpoint = ModelCheckpoint(name_to_save,
                                     monitor="val_loss",
@@ -157,27 +153,29 @@ def train_model(face_classifier, epochs=5):
 
     return history
 
-
 # Dataset information
 def test_image_classifier(model, path, y_true, img_height=128, img_width=128, class_names=['admin', 'other']):
     total = 0  # number of images total
     correct = 0  # number of images classified correctly
+    
+    # Test set
+    test_ds = keras.preprocessing.image_dataset_from_directory(
+        test_image_folder,
+        image_size=(img_height, img_width),
+        labels='inferred',
+        label_mode='categorical',
+        seed=42,
+        batch_size=batch_size)
 
-    for filename in os.listdir(path):
-        # read each image in the folder and classifies it
-        test_path = os.path.join(path, filename)
-        test_image = image.load_img(
-            test_path, target_size=(img_height, img_width, 3))
-        # from image to array, can try type(test_image)
-        test_image = image.img_to_array(test_image)
-
-        test_image = np.expand_dims(test_image, axis=0)
-        result = model.predict(test_image)
+    for x, y_true in test_ds:
+        result = model.predict(x, verbose=0)
 
         y_pred = class_names[np.array(result[0]).argmax(
             axis=0)]  # predicted class
-
+        y_true = class_names[np.array(y_true[0]).argmax(
+            axis=0)]
         total += 1
+
         if y_pred == y_true:
             correct += 1
 
@@ -197,7 +195,9 @@ def test_model():
                                       'data/test/other',
                                       y_true='other')
 
+def train_test_model():
+    face_classifier = build_model() # Build the model
+    train_model(compile_model(face_classifier)) # Compile and train the model
+    test_model() # Test the model on the test set
 
-# face_classifier = build_model() # Build the model
-# train_model(compile_model(face_classifier)) # Compile and train the model
-# test_model() # Test the model on the test set
+# train_test_model()
