@@ -79,18 +79,6 @@ def video_capture():
             flags=cv2.CASCADE_SCALE_IMAGE
         )
 
-        f = open("data/transcription.txt", "r")
-
-        transcript = f.read().splitlines()
-        transcript1 = ""
-        transcript2 = ""
-
-        if len(transcript) >= 1:
-            transcript1 = transcript[0]
-
-            if len(transcript) >= 2:
-                transcript2 = transcript[1]
-
         for (x, y, w, h) in faces:
 
             random_take = random.randrange(30)
@@ -138,15 +126,24 @@ def video_capture():
                 name = "UNKNOWN"
                 color = (255, 255, 255)
 
-            if transcript1 == "can you see me":
-                # draw a rectangle around the face
-                cv2.rectangle(frame,
-                            (x, y),  # start_point
-                            (x+w, y+h),  # end_point
-                            color,
-                            2)  # thickness in px
+            
+            f = open("data/transcription.txt", "r")
 
-                if transcript2 == "who am i":
+            transcript = f.read().splitlines()
+
+            for line in transcript:
+                line = line.lower().strip()
+                print(line.lower())
+
+                if line == "can you see me":
+                    # draw a rectangle around the face
+                    cv2.rectangle(frame,
+                                (x, y),  # start_point
+                                (x+w, y+h),  # end_point
+                                color,
+                                2)  # thickness in px
+
+                if line == "who am i":
                     cv2.putText(frame, "{:5}".format(name), (end_x-x+start_x+20, y+100), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255),thickness = 2)
 
         cv2.imshow('Video', frame)
