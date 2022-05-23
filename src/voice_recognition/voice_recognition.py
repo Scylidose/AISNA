@@ -1,10 +1,12 @@
 import speech_recognition as sr
 
-def speechRecognition():
+def speechRecognition(file_transcript = ""):
         
     r = sr.Recognizer()
 
-    f = open("data/transcription.txt", "w")
+    f = open("data/transcription.txt", "a+")
+
+    file_transcript = f.read()
 
     mic = sr.Microphone()
 
@@ -15,12 +17,17 @@ def speechRecognition():
         raise TypeError("`microphone` must be `Microphone` instance")
 
     print("listening")
-    with mic as source:
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source)
+    try:
+        with mic as source:
+            r.adjust_for_ambient_noise(source, duration=0.2)
+            audio = r.listen(source)
 
-    transcript = r.recognize_google(audio)
-    print(transcript)
-    f.write(transcript)
-
-    speechRecognition()
+            transcript = r.recognize_google(audio)
+            print(transcript)
+            f.write(transcript+"\n")
+        f.close()
+    except KeyboardInterrupt:
+        raise KeyboardInterrupt
+    else:
+        pass
+    return speechRecognition(file_transcript)
