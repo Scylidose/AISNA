@@ -29,11 +29,6 @@ if use_aug:
 
 model_location = 'models/'+model_name
 
-if os.path.isfile(model_location) != True:
-    classifier.train_model(classifier.compile_model(classifier.build_model()))
-
-face_classifier = keras.models.load_model(model_location)
-
 class_names = ['admin', 'other']
 imgLink = "data/train/admin/"
 imgLinkAug = "data/train_aug/admin/"
@@ -59,6 +54,11 @@ def get_extended_image(img, x, y, w, h, k=0.1):
     return face_image
 
 def video_capture():
+    
+    if os.path.isfile(model_location) != True:
+        classifier.train_model(classifier.compile_model(classifier.build_model()))
+
+    face_classifier = keras.models.load_model(model_location)
 
     video_capture = cv2.VideoCapture(0)  # webcamera
 
