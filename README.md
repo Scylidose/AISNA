@@ -49,6 +49,10 @@ After training the model and this new image, we obtained a loss of 0.0004 and ac
 
 Since the model with augmented data presents a better accuracy and loss score, we decided to use this technique.
 
+## Demo 
+
+https://user-images.githubusercontent.com/28122432/169847349-74c1bef1-12e8-45a7-a75b-9c74f7e0967d.mp4
+
 ## Getting Started
 
 ### Prerequisites
