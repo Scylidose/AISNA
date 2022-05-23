@@ -35,10 +35,10 @@ I chose to fine-tune this different parameters on the MobileNet architecture:
 ### Results
 
 Such as seen previously, the best set of parameters are: 
-- Batch Size: 16
+- Batch Size: 8
 - Activation function: Softmax
 - Optimizer: Adam
-- Learning Rate: 0.01
+- Learning Rate: 0.5
 
 Which provide a loss of 0.0247 and accuracy of 0.9914 on the *training set* and a loss of 0.0118 and accuracy of 0.9954 on the *validation set*.  
 
