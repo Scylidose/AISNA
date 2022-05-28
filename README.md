@@ -51,7 +51,9 @@ Since the model with augmented data presents a better accuracy and loss score, w
 
 ## Demo 
 
-https://user-images.githubusercontent.com/28122432/169847349-74c1bef1-12e8-45a7-a75b-9c74f7e0967d.mp4
+
+https://user-images.githubusercontent.com/28122432/170842748-47354517-9159-4464-86b9-64cea4c2f599.mp4
+
 
 ## Getting Started
 
