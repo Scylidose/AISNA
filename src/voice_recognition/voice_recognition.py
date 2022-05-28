@@ -23,7 +23,6 @@ def speechRecognition(file_transcript = ""):
             audio = r.listen(source)
 
             transcript = r.recognize_google(audio)
-            print(transcript)
             f.write(transcript+"\n")
         f.close()
     except KeyboardInterrupt:

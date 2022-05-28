@@ -16,8 +16,9 @@ import cv2
 from src.live_faces_recognition import classifier
 
 # opencv object that will detect faces for us
-face_cascade = cv2.CascadeClassifier(
-    cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+# face_cascade = cv2.CascadeClassifier('config/haarcascade_frontalface_default.xml')
+
+face_cascade = cv2.CascadeClassifier('config/lbpcascade_frontalface_improved.xml')
 
 # Load model to face classification
 # model was created in me_not_me_classifier.ipynb notebook
@@ -53,6 +54,51 @@ def get_extended_image(img, x, y, w, h, k=0.1):
     face_image = np.expand_dims(face_image, axis=0)
     return face_image
 
+def draw_border(img, pt1, pt2, color, thickness, r, d):
+    x1,y1 = pt1
+    x2,y2 = pt2
+    # Top left
+    cv2.line(img, (x1 + r, y1), (x1 + r + d, y1), color, thickness)
+    cv2.line(img, (x1, y1 + r), (x1, y1 + r + d), color, thickness)
+    cv2.ellipse(img, (x1 + r, y1 + r), (r, r), 180, 0, 90, color, thickness)
+
+    incrTL = incrBL = x1 + r
+    incrTR = incrBR = y1 + r
+
+    for i in range(0, 100):
+        if incrTL <= x2-8:
+            cv2.line(img, (incrTL, y1), (incrTL+8, y1), color, 2)
+        if incrTR <= y2-8:
+            cv2.line(img, (x2, incrTR), (x2, incrTR+8), color, 2)
+        if incrBL <= x2-8:
+            cv2.line(img, (incrBL, y2), (incrBL+8, y2), color, 2)
+        if incrBR <= y2-8:
+            cv2.line(img, (x1, incrBR), (x1, incrBR+8), color, 2)
+
+        incrTL += 16
+        incrTR += 16
+        incrBL += 16
+        incrBR += 16
+
+    cv2.line(img, (int(x1+((x2-x1)/2)), y1), (int(x1+((x2-x1)/2)), y1+16), color, 3) # top
+    cv2.line(img, (int(x1+((x2-x1)/2)), y2), (int(x1+((x2-x1)/2)), y2-16), color, 3) # bottom
+    cv2.line(img, (x1, int(y1+((y2-y1)/2))), (x1+16, int(y1+((y2-y1)/2))), color, 3) # left
+    cv2.line(img, (x2, int(y1+((y2-y1)/2))), (x2-16, int(y1+((y2-y1)/2))), color, 3) # left
+
+    # Top right
+    cv2.line(img, (x2 - r, y1), (x2 - r - d, y1), color, thickness)
+    cv2.line(img, (x2, y1 + r), (x2, y1 + r + d), color, thickness)
+    cv2.ellipse(img, (x2 - r, y1 + r), (r, r), 270, 0, 90, color, thickness)
+
+    # Bottom left
+    cv2.line(img, (x1 + r, y2), (x1 + r + d, y2), color, thickness)
+    cv2.line(img, (x1, y2 - r), (x1, y2 - r - d), color, thickness)
+    cv2.ellipse(img, (x1 + r, y2 - r), (r, r), 90, 0, 90, color, thickness)
+    # Bottom right
+    cv2.line(img, (x2 - r, y2), (x2 - r - d, y2), color, thickness)
+    cv2.line(img, (x2, y2 - r), (x2, y2 - r - d), color, thickness)
+    cv2.ellipse(img, (x2 - r, y2 - r), (r, r), 0, 0, 90, color, thickness)
+
 def video_capture():
     
     if os.path.isfile(model_location) != True:
@@ -75,12 +121,15 @@ def video_capture():
             gray,
             scaleFactor=1.3,
             minNeighbors=4,
-            minSize=(90, 90),
+            minSize=(100, 100),
             flags=cv2.CASCADE_SCALE_IMAGE
         )
 
         for (x, y, w, h) in faces:
-
+            y-=70
+            x-=40
+            w+=100
+            h+=100
             random_take = random.randrange(30)
             # for each face on the image detected by OpenCV
             # get extended image of this face
@@ -133,15 +182,15 @@ def video_capture():
 
             for line in transcript:
                 line = line.lower().strip()
-                print(line.lower())
 
                 if line == "can you see me":
                     # draw a rectangle around the face
-                    cv2.rectangle(frame,
-                                (x, y),  # start_point
-                                (x+w, y+h),  # end_point
-                                color,
-                                2)  # thickness in px
+                    # cv2.rectangle(frame,
+                    #             (x, y),  # start_point
+                    #             (x+w, y+h),  # end_point
+                    #             color,
+                    #             2)  # thickness in px
+                    draw_border(frame, (x, y), (x+w, y+h), color, 5, 5, 10)
 
                 if line == "who am i":
                     cv2.putText(frame, "{:5}".format(name), (end_x-x+start_x+20, y+100), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255),thickness = 2)
